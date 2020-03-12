@@ -17,8 +17,9 @@ server.get('/', (req, res) => {
 function logger(req, res, next) {
   const method = req.method;
   const endpoint = req.originalUrl;
+  let date = new Date();
 
-  console.log(`${method} to ${endpoint}`);
+  console.log(`${method} to ${endpoint} at ${date}`);
   next();
 }
 
