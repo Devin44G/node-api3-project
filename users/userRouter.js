@@ -30,8 +30,16 @@ router.get('/', (req, res) => {
     });
 });
 
-router.get('/:id', (req, res) => {
-  // do your magic!
+router.get('/:id', validateUserId, (req, res) => {
+  User.getById(req.params.id)
+    .then(user => {
+      if(user) {
+        res.status(200).json(user);
+      }
+    })
+    .catch(err => {
+      res.status(500).json({ error: "Error retrieving user data" });
+    });
 });
 
 router.get('/:id/posts', (req, res) => {
@@ -53,8 +61,8 @@ function validateUserId(req, res, next) {
     .then(user => {
       if(user.id) {
         req.user = user;
+        next();
       }
-      next();
     })
     .catch(err => {
       res.status(400).json({ message: "Invalid user ID" });
