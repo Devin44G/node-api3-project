@@ -16,8 +16,15 @@ router.post('/', validateUser, (req, res) => {
     });
 });
 
-router.post('/:id/posts', (req, res) => {
-
+router.post('/:id/posts', validateUserId, validatePost, (req, res) => {
+  req.body.user_id = req.params.id;
+  Post.insert(req.body)
+   .then(post => {
+     res.status(201).json(post);
+   })
+   .catch(err => {
+     res.status(500).json({error: "Error creating post"});
+   });
 });
 
 router.get('/', (req, res) => {
@@ -42,16 +49,34 @@ router.get('/:id', validateUserId, (req, res) => {
     });
 });
 
-router.get('/:id/posts', (req, res) => {
-  // do your magic!
+router.get('/:id/posts', validateUserId, (req, res) => {
+  User.getUserPosts(req.params.id)
+    .then(posts => {
+      res.status(200).json(posts);
+    })
+    .catch(err => {
+      res.status(500).json({ error: "Error retrieving posts data" });
+    });
 });
 
-router.delete('/:id', (req, res) => {
-  // do your magic!
+router.delete('/:id', validateUserId, (req, res) => {
+  User.remove(req.params.id)
+    .then(user => {
+      res.status(200).json({ message: "User successfully deleted" });
+    })
+    .catch(err => {
+      res.status(500).jason({ error: "Error deleting user" });
+    })
 });
 
-router.put('/:id', (req, res) => {
-  // do your magic!
+router.put('/:id', validateUserId, (req, res) => {
+  User.update(req.params.id, req.body)
+    .then(user => {
+      res.status(201).json(user);
+    })
+    .catch(err => {
+      res.status(500).json({ error: "Error updating user" })
+    });
 });
 
 //custom middleware
